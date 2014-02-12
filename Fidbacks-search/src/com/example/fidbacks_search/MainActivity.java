@@ -1,8 +1,11 @@
 package com.example.fidbacks_search;
 
+import java.util.ArrayList;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.R.string;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.SearchManager;
@@ -29,7 +32,7 @@ public class MainActivity extends Activity {
             public boolean onQueryTextSubmit(String query) {
                 // collapse the view ?
                 htmlretriever myRetrieve = new htmlretriever();
-                String url = "http://192.168.0.105:3000/users.json?search=" + query;
+                String url = "https://www.fidbacks.com/api/v1/users/" + query;
 	            htmlretriever retrieve = new htmlretriever();
 	            try
 	            {
@@ -42,23 +45,33 @@ public class MainActivity extends Activity {
 	                else {
 		                // If at least a user is found
 		                JSONObject nested = new JSONObject(text);
-		                
+		                JSONArray accountsArray = new JSONArray();
+		                // Getting the accounts name
+		                accountsArray = nested.getJSONArray("accounts");
+						ArrayList<String> sites_name = new ArrayList<String>();
+						for(int i = 0; i < accountsArray.length(); i++){
+			                JSONObject accountObject = (JSONObject) accountsArray.get(i);
+			                sites_name.add(((JSONObject) accountObject.get("account")).getString("site"));
+		                }
+						// Getting the accounts logo
+						ArrayList<String> sites_logo = new ArrayList<String>();
+						for(int i = 0; i < accountsArray.length(); i++){
+							sites_logo.add("http://192.168.0.105:3000/assets/logos/" + sites_name.get(i).toString() + "_aside.png");
+		                }
+		                // Repacking
 		                JSONArray repackArray = new JSONArray();
-	
 	                    //get values you need
 	                    String fidbacks_number = nested.getString("fidbacks_number");
 	                    String pseudo = nested.getString("pseudo");
 	                    String name = nested.getString("name");
-	                    String sites_logo = nested.getString("sites_logo");
-	                    String sites_name = nested.getString("sites_name");
 	
 	                    //add values to new object
 	                    JSONObject repack = new JSONObject();
 	                    repack.put("fidbacks_number", fidbacks_number);
 	                    repack.put("pseudo", pseudo);
 	                    repack.put("name", name);
-	                    repack.put("sites_logo", sites_logo);
-	                    repack.put("sites_name", sites_name);
+	                    repack.put("sites_logo", sites_logo.toString());
+	                    repack.put("sites_name", sites_name).toString();
 	
 	                    //add to new array 
 	                    repackArray.put(repack);
