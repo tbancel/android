@@ -1,9 +1,18 @@
 package com.example.fidbacks_search;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.BufferedHttpEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -55,8 +64,20 @@ public class ShowUser extends Activity {
 					URL newurl = null;
 					try {
 						newurl = new URL(url);
+					    // SSL Handling
+						HttpGet httpRequest = null;
 
+					    httpRequest = new HttpGet(newurl.toURI());
+
+					    HttpClient httpclient = new DefaultHttpClient();
+					    HttpResponse response = (HttpResponse) httpclient.execute(httpRequest);
+
+					    HttpEntity entity = response.getEntity();
+					    BufferedHttpEntity b_entity = new BufferedHttpEntity(entity);
+					    InputStream input = b_entity.getContent();
 					} catch (MalformedURLException e) {
+						e.printStackTrace();
+					} catch (URISyntaxException e) {
 						e.printStackTrace();
 					}
 					mIcon_val = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
